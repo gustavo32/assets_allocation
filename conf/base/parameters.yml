@@ -1,0 +1,122 @@
+start_date: 2013-01-01
+end_date: null
+
+delete_first_n_rows: 3
+
+prefixado_return: 10.7
+posfixado_cdi_percentage: 92
+posfixado_ipca_return: 6.4
+
+resample_rate: W
+
+return_risk:
+  clip_max: 50
+  add_risk: True
+  return_col: close
+  risk_col: close_4_mstd
+
+training:
+  training_size: 0.8
+  make_plots: True
+
+  experiments:
+    basic_linear_regression:
+      model: linear_regression
+      params:
+        fit_intercept: True
+        positive: True
+
+    baisc_fixed_strategy:
+      model: fixed
+
+
+#    basic_arima:
+#      model: arima
+#      params:
+#        seasonal: True
+#        m: 6
+
+indices:
+  bvsp:
+    add_return_risk: True
+    resample_strategy: keep_last
+    process:
+      - close
+      - close_4_mstd
+      - macd
+    training:
+      - bvsp_macd
+#      - bvsp_close_4_mstd
+      - global_vix_close
+      - brazil_vix_close
+
+  ifix:
+    add_return_risk: True
+    resample_strategy: keep_last
+    process:
+      - close
+      - close_4_mstd
+      - macd
+    training:
+#      - ifix_macd
+#      - ifix_close_4_mstd
+      - global_vix_close
+      - brazil_vix_close
+
+  ivvb11:
+    add_return_risk: True
+    resample_strategy: keep_last
+    process:
+      - close
+      - close_4_mstd
+      - macd
+    training:
+#      - ivvb11_macd
+      - global_vix_close
+      - brazil_vix_close
+
+  posfixado_cdi:
+    add_return_risk: True
+    resample_strategy: sum
+    process:
+      - close
+      - close_4_mstd
+      - macd
+    training:
+#      - ivvb11_macd
+#      - bvsp_macd
+#      - posfixado_cdi_close
+#      - posfixado_cdi_macd
+      - global_vix_close
+      - brazil_vix_close
+
+  posfixado_ipca:
+    add_return_risk: True
+    resample_strategy: sum
+    process:
+      - close
+      - close_4_mstd
+      - macd
+    training:
+#      - ivvb11_macd
+#      - bvsp_macd
+#      - posfixado_ipca_close
+#      - posfixado_ipca_macd
+      - global_vix_close
+      - brazil_vix_close
+
+  global_vix:
+    add_return_risk: False
+    resample_strategy: keep_last
+    process:
+      - close
+      - close_4_mstd
+      - macd
+
+  brazil_vix:
+    add_return_risk: False
+    resample_strategy: keep_last
+    process:
+      - close
+      - close_4_mstd
+      - macd

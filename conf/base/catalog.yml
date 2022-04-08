@@ -1,0 +1,418 @@
+# Here you can define all your data sets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://kedro.readthedocs.io/en/stable/05_data/01_data_catalog.html
+#
+# We support interacting with a variety of data stores including local file systems, cloud, network and HDFS
+#
+# An example data set definition can look as follows:
+#
+#bikes:
+#  type: pandas.CSVDataSet
+#  filepath: "data/01_raw/bikes.csv"
+#
+#weather:
+#  type: spark.SparkDataSet
+#  filepath: s3a://your_bucket/data/01_raw/weather*
+#  file_format: csv
+#  credentials: dev_s3
+#  load_args:
+#    header: True
+#    inferSchema: True
+#  save_args:
+#    sep: '|'
+#    header: True
+#
+#scooters:
+#  type: pandas.SQLTableDataSet
+#  credentials: scooters_credentials
+#  table_name: scooters
+#  load_args:
+#    index_col: ['name']
+#    columns: ['name', 'gear']
+#  save_args:
+#    if_exists: 'replace'
+#    # if_exists: 'fail'
+#    # if_exists: 'append'
+#
+# The Data Catalog supports being able to reference the same file using two different DataSet implementations
+# (transcoding), templating and a way to reuse arguments that are frequently repeated. See more here:
+# https://kedro.readthedocs.io/en/stable/05_data/01_data_catalog.html
+
+#companies:
+#  type: pandas.CSVDataSet
+#  filepath: data/01_raw/companies.csv
+#  # more about layers in the Data Engineering Convention:
+#  # https://kedro.readthedocs.io/en/stable/03_tutorial/06_visualise_pipeline.html#interact-with-data-engineering-convention
+#  layer: raw
+
+ifix:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/ifix.csv
+  layer: raw
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+bvsp:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/bvsp.csv
+  layer: raw
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+global_vix:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/global_vix.csv
+  layer: raw
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+brazil_vix:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/brazil_vix.csv
+  layer: raw
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+ivvb11:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/ivvb11.csv
+  layer: raw
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+posfixado_ipca:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/ipca.csv
+  layer: raw
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+posfixado_cdi:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/cdi.csv
+  layer: raw
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+business_dates:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/business_dates.csv
+  layer: raw
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+
+resampled_ifix:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/resampled_ifix.csv
+  layer: intermediate
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+resampled_bvsp:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/resampled_bvsp.csv
+  layer: intermediate
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+resampled_ivvb11:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/resampled_ivvb11.csv
+  layer: intermediate
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+resampled_posfixado_ipca:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/resampled_ipca.csv
+  layer: intermediate
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+resampled_posfixado_cdi:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/resampled_cdi.csv
+  layer: intermediate
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+resampled_brazil_vix:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/resampled_brazil_vix.csv
+  layer: intermediate
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+resampled_global_vix:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/resampled_global_vix.csv
+  layer: intermediate
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+
+prefixado_investment:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/prefixado_investment.csv
+  layer: primary
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+posfixado_cdi_investment:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/posfixado_cdi_investment.csv
+  layer: primary
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+posfixado_ipca_investment:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/posfixado_ipca_investment.csv
+  layer: primary
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+bvsp_investment:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/bvsp_investment.csv
+  layer: primary
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+global_vix_investment:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/global_vix_investment.csv
+  layer: primary
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+brazil_vix_investment:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/brazil_vix_investment.csv
+  layer: primary
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+ifix_investment:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/ifix_investment.csv
+  layer: primary
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+ivvb11_investment:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/ivvb11_investment.csv
+  layer: primary
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+
+
+
+
+
+prefixado_features:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/prefixado_features.csv
+  layer: feature
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+posfixado_cdi_features:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/posfixado_cdi_features.csv
+  layer: feature
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+posfixado_ipca_features:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/posfixado_ipca_features.csv
+  layer: feature
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+bvsp_features:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/bvsp_features.csv
+  layer: feature
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+ifix_features:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/ifix_features.csv
+  layer: feature
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+ivvb11_features:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/ivvb11_features.csv
+  layer: feature
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+brazil_vix_features:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/brazil_vix_features.csv
+  layer: feature
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+global_vix_features:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/global_vix_features.csv
+  layer: feature
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+
+
+
+
+
+
+
+model_input:
+  type: pandas.CSVDataSet
+  filepath: data/05_model_input/input.csv
+  layer: model_input
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [0]
+
+#reviews:
+#  type: pandas.CSVDataSet
+#  filepath: data/01_raw/reviews.csv
+#  layer: raw
+#
+#shuttles:
+#  type: pandas.ExcelDataSet
+#  filepath: data/01_raw/shuttles.xlsx
+#  layer: raw
+#  load_args:
+#    engine: openpyxl
+
+#preprocessed_companies:
+#  type: pandas.ParquetDataSet
+#  filepath: data/02_intermediate/preprocessed_companies.pq
+#  layer: intermediate
+#
+#preprocessed_shuttles:
+#  type: pandas.ParquetDataSet
+#  filepath: data/02_intermediate/preprocessed_shuttles.pq
+#  layer: intermediate
+#
+#model_input_table:
+#  type: pandas.ParquetDataSet
+#  filepath: data/03_primary/model_input_table.pq
+#  layer: primary
+#
+#active_modelling_pipeline.regressor:
+#  type: pickle.PickleDataSet
+#  filepath: data/06_models/regressor_active.pickle
+#  versioned: true
+#  layer: models
+#
+#candidate_modelling_pipeline.regressor:
+#  type: pickle.PickleDataSet
+#  filepath: data/06_models/regressor_candidate.pickle
+#  versioned: true
+#  layer: models
