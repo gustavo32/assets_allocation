@@ -22,7 +22,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     return {
         "__default__": ingestion_pipeline + preprocessing_pipeline + training_pipeline,
         "science": preprocessing_pipeline + training_pipeline,
-        "di": ingestion_pipeline,
-        "dp": preprocessing_pipeline,
-        "ds": training_pipeline,
+        "ingestion": ingestion_pipeline,
+        "preprocessing": preprocessing_pipeline,
+        "training": training_pipeline,
     }

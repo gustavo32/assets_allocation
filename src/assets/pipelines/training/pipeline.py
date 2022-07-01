@@ -35,7 +35,7 @@ def create_modeling_pipeline(experiments):
             ),
             node(
                 func=evaluate_model,
-                inputs=["models", "X_test", "y_test", "params:indices", "params:experiment"],
+                inputs=["models", "X_train", "X_test", "y_test", "params:indices", "params:experiment"],
                 outputs="y_preds",
                 name=name+"_evaluate_node",
             ),

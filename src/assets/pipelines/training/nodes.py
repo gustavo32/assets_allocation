@@ -10,12 +10,13 @@ import matplotlib.pyplot as plt
 import pmdarima as pm
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
+from scipy.special import softmax
 
 pd.options.display.float_format = '{:,.4f}'.format
 
 
 def _normalize_sum_to_one(y_preds):
-    test_df = y_preds.sort_index().clip(0, 1)
+    test_df = y_preds.sort_index().clip(0, 20)
     total_sum = reduce(add, [test_df[l] for l in test_df.columns])
     return test_df.apply(lambda col: col / total_sum.values)
 
@@ -68,17 +69,13 @@ def merge_feat_tables(delete_first_n_rows, **kwargs):
 def separate_labels_and_features(df):
     labels = [c for c in df.columns if c.endswith("return_risk")]
 
-    for l in labels:
-        df[l+"_original"] = df[l]
-        df[l] = df[l].shift(-1)
+    y = df[labels].shift(-1)
+    y = _normalize_sum_to_one(y)
 
-    total_sum = reduce(add, [df[l] for l in labels])
-    total_sum_original = reduce(add, [df[l + "_original"] for l in labels])
-    for l in labels:
-        df[l + "_original"] = df[l + "_original"] / total_sum_original
-        df[l] = df[l] / total_sum
-    print(df[labels])
-    return df.drop(columns=labels), df[labels]
+    print(y["ivvb11_return_risk"].sum())
+    print(y["bvsp_return_risk"].sum())
+
+    return df.drop(columns=labels), y
 
 
 def split_data(X: pd.DataFrame, y: pd.DataFrame, training_size: int) -> Tuple:
@@ -98,6 +95,14 @@ def split_data(X: pd.DataFrame, y: pd.DataFrame, training_size: int) -> Tuple:
     return X_train, X_test, y_train, y_test
 
 
+def _forecast_exogenous_variables(df, horizon):
+    forecasts = {}
+    for c in df.columns:
+        model = pm.auto_arima(df[c])
+        forecasts[c] = model.predict(horizon)
+    return pd.DataFrame(forecasts)
+
+
 def train_model(X_train: pd.DataFrame, y_train: pd.DataFrame, indices, experiment) -> Dict[str,LinearRegression]:
     models = {}
     y_preds = {}
@@ -110,12 +115,15 @@ def train_model(X_train: pd.DataFrame, y_train: pd.DataFrame, indices, experimen
 
         if experiment["model"] == "linear_regression":
             model = LinearRegression(**experiment["params"])
-            model.fit(train_df, y_train[return_risk_col])
+            model.fit(train_df, y_train[return_risk_col] * (X_train[f"{index}_close"].sum() / len(X_train)))
             models[index] = model
             y_pred = model.predict(train_df)
 
         elif experiment["model"] == "arima":
-            model = pm.auto_arima(y_train[return_risk_col], X=train_df, **experiment["params"], n_jobs=-1)
+            #  * (X_train[f"{index}_close"].sum() / len(X_train))
+            model = pm.auto_arima(y_train[return_risk_col],
+                                  X=train_df,
+                                  **experiment["params"])
             models[index] = model
             y_pred = model.predict(len(y_train), X=train_df)
 
@@ -141,7 +149,7 @@ def train_model(X_train: pd.DataFrame, y_train: pd.DataFrame, indices, experimen
 
 
 def evaluate_model(
-    models: Dict, X_test: pd.DataFrame, y_test: pd.DataFrame, indices, experiment
+    models: Dict, X_train: pd.DataFrame, X_test: pd.DataFrame, y_test: pd.DataFrame, indices, experiment
 ):
     """Calculates and logs the coefficient of determination.
 
@@ -158,7 +166,10 @@ def evaluate_model(
         if experiment["model"] == "linear_regression":
             y_pred = model.predict(test_df)
         elif experiment["model"] == "arima":
-            y_pred = model.predict(len(y_test), X=test_df)
+            print("building forecasts")
+            forecasts_df = _forecast_exogenous_variables(X_train, len(y_test))
+            print("finishing forecasts")
+            y_pred = model.predict(len(y_test), X=forecasts_df)
         elif experiment["model"] == "fixed":
             y_pred = model
         else:
@@ -174,7 +185,7 @@ def evaluate_model(
 
 
 def compare_performance_traditional_scenario(X, y, y_preds, make_plots=False):
-    close_columns = [indices.replace("return_risk", "close") for indices in y.columns]
+    close_columns = [indices.replace("return_risk", "close") for indices in y_preds.columns]
     test_index = y_preds.index
 
     X_preds = _get_shifted_data(X, test_index, period=1)[close_columns]
@@ -191,10 +202,14 @@ def compare_performance_traditional_scenario(X, y, y_preds, make_plots=False):
     sum_columns = X_preds["bvsp_close"]
     _print_approach_performance(sum_columns, approach_name="IBOVA", make_plot=make_plots)
 
+    # ibova approach
+    sum_columns = X_preds["ivvb11_close"]
+    _print_approach_performance(sum_columns, approach_name="IVVB11", make_plot=make_plots)
 
     # ipca approach
     sum_columns = X_preds["posfixado_ipca_close"]
     _print_approach_performance(sum_columns, approach_name="IPCA", make_plot=make_plots)
+
 
     # our approach
     test_df = _normalize_sum_to_one(y_preds)
@@ -204,6 +219,7 @@ def compare_performance_traditional_scenario(X, y, y_preds, make_plots=False):
     _print_approach_performance(sum_columns, approach_name="OUR APPROACH", make_plot=make_plots)
 
     allocation_df = test_df.copy()
+
 
     #perfect approach
     total_sum = reduce(add, [y_preds_perfect[l] for l in y_preds_perfect.columns])

@@ -11,7 +11,7 @@ resample_rate: W
 
 return_risk:
   clip_max: 50
-  add_risk: True
+  add_risk: False
   return_col: close
   risk_col: close_4_mstd
 
@@ -26,15 +26,14 @@ training:
         fit_intercept: True
         positive: True
 
-    baisc_fixed_strategy:
+    basic_fixed_strategy:
       model: fixed
 
-
-#    basic_arima:
-#      model: arima
-#      params:
-#        seasonal: True
-#        m: 6
+    basic_arima:
+      model: arima
+      params:
+        seasonal: True
+        m: 6
 
 indices:
   bvsp:

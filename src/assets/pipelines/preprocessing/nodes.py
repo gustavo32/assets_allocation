@@ -42,15 +42,16 @@ def create_tech_indicators(df, indicators, return_risk, add_return_risk):
     for ind in indicators:
         feat_dict[ind] = stock[ind].values
 
-    df_ind = pd.DataFrame(feat_dict, index=df.index)
+    df_ind = pd.DataFrame(feat_dict, index=df.index).fillna(0)
     if add_return_risk:
-        df_ind["return_risk"] = df_ind[return_risk.return_col].fillna(0).
-        if return_risk.add_risk:
-            series_risk = df_ind[return_risk.risk_col].fillna(0)
-            total_risk = series_risk[series_risk < 0]
-            total_risk = 0 if len(total_risk) == 0 else total_risk
-            df_ind["return_risk"] = df_ind.return_risk/(total_risk+0.5)
-        df_ind["return_risk"] = df_ind.return_risk.clip(0, return_risk.clip_max)
+        df_ind["return_risk"] = df_ind.close
+
+    #     if return_risk.add_risk:
+    #         series_risk = df_ind[return_risk.risk_col].fillna(0)
+    #         total_risk = series_risk[series_risk < 0]
+    #         total_risk = 0 if len(total_risk) == 0 else total_risk
+    #         df_ind["return_risk"] = df_ind.return_risk/(total_risk+0.5)
+    #     df_ind["return_risk"] = df_ind.return_risk.clip(0, return_risk.clip_max)
     return df_ind
 
 

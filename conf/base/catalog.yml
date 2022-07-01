@@ -378,6 +378,26 @@ model_input:
     index_col: 0
     parse_dates: [0]
 
+
+X:
+  type: pandas.CSVDataSet
+  filepath: data/06_models/X_split.csv
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [ 0 ]
+
+y:
+  type: pandas.CSVDataSet
+  filepath: data/06_models/y_split.csv
+  save_args:
+    index: True
+  load_args:
+    index_col: 0
+    parse_dates: [ 0 ]
+
+
 #reviews:
 #  type: pandas.CSVDataSet
 #  filepath: data/01_raw/reviews.csv
